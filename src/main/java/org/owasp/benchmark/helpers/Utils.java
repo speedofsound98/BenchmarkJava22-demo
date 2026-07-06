@@ -140,14 +140,12 @@ public class Utils {
         // loses its execute permissions. So this hack adds the required execute permissions back.
         if (!System.getProperty("os.name").contains("Windows")) {
             File script = getFileFromClasspath("insecureCmd.sh", Utils.class.getClassLoader());
+            // Restrict permissions to the owning user only (least privilege); the script
+            // only needs to be executed by the process running this application.
             Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
             perms.add(PosixFilePermission.OWNER_READ);
             perms.add(PosixFilePermission.OWNER_WRITE);
             perms.add(PosixFilePermission.OWNER_EXECUTE);
-            perms.add(PosixFilePermission.GROUP_READ);
-            perms.add(PosixFilePermission.GROUP_EXECUTE);
-            perms.add(PosixFilePermission.OTHERS_READ);
-            perms.add(PosixFilePermission.OTHERS_EXECUTE);
 
             try {
                 Files.setPosixFilePermissions(script.toPath(), perms);
